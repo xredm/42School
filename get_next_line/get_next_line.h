@@ -6,7 +6,7 @@
 /*   By: mredkole <mredkole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/18 14:03:02 by mredkole          #+#    #+#             */
-/*   Updated: 2023/02/21 21:08:23 by mredkole         ###   ########.fr       */
+/*   Updated: 2023/02/23 12:48:13 by mredkole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,17 +16,17 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdio.h>
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 1000
 # endif
 
-size_t	strlen(const char *arr);
-char	*strjoin(char *buff_total, char *buffer);
 char	*get_next_line(int fd);
-char	*strchr(const char *buff_total, int c);
-char	read_line(int fd, char *buff_total);
-char	*get_line_after(char *buff_total);
-char	*new_line(char *buff_total);
+char	*ft_strjoin(char const *result, char const *buffer);
+char	*ft_strchr(const char *arr, int c);
+void	ft_bzero(void *arr, size_t size);
+void	*ft_calloc(size_t count, size_t size);
+size_t	ft_strlen(const char *arr);
 
 #endif

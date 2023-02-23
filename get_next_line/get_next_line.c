@@ -6,140 +6,135 @@
 /*   By: mredkole <mredkole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/18 14:02:58 by mredkole          #+#    #+#             */
-/*   Updated: 2023/02/21 21:08:18 by mredkole         ###   ########.fr       */
+/*   Updated: 2023/02/23 12:51:39 by mredkole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
 
-char	*read_file(int fd, char *buff_total)
+char	*ft_free(char *result, char *buffer)/*here we join both and free the result*/
+{
+	char	*arr;
+
+	arr = ft_strjoin(result, buffer);
+	free(result);
+	return (arr);
+}
+
+char	*read_file(int fd, char *result)
 {
 	char	*buffer;
-	int	bytes;
+	int		bytes;
 
-	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (!buffer)
-		return (0);
-	bytes = 1; //to enter the loop -1 error; 
-	// strchr '\n' to quit if nl is found
-	while (bytes != 0 && !strchr(buff_total, '\n'))
+	if (!result)/*malloc since result is empty*/
+		result = ft_calloc(1, 1);
+	buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));/*malloc according to our buffer size*/
+	bytes = 1;
+	while (bytes > 0 && !ft_strchr(buffer, '\n'))/*stop when nl reached*/	
 	{
-		bytes = read(fd, buffer, BUFFER_SIZE);//while not eof
-		if (bytes == -1)//on error; or interrupt
+		bytes = read(fd, buffer, BUFFER_SIZE);/*while loop until the eof is reached*/
+		if (bytes == -1)/*error happened or interrupt 0 is when whole file is read*/
 		{
 			free(buffer);
 			return (0);
 		}
-		buffer[bytes] = '\0';
-		buff_total = strjoin(buff_total, buffer);//join and free
+		buffer[bytes] = '\0';/*end it to protect from leaks*/
+		result = ft_free(result, buffer);/*join result & buffer then free*/
 	}
 	free(buffer);
-	return (buff_total);
+	return (result);
 }
 
-char	*take_line(char *buff_total)//takes line to return
+char	*get_line(char *total)/*takes one line for a return*/
 {
-	int	i;
-	char	*arr;
+	char	*line;
+	int		i;
 
 	i = 0;
-	if (!buff_total)//check if no line
+	if (!total[i])
 		return (0);
-	while (buff_total[i] && buff_total[i] != '\n')//find eol
+	while (total[i] && total[i] != '\n')/*find the end of the line*/
 		i++;
-	arr = malloc(sizeof(char) * (i + 2));//allocate till eol
-	if (!arr)
-		return (0);
+	line = ft_calloc(i + 2, sizeof(char));/*malloc the size of the line*/
 	i = 0;
-	while (buff_total[i] && buff_total[i] != '\n')
+	while (total[i] && total[i] != '\n')/*fill up the line*/
 	{
-		arr[i] = buff_total[i];
+		line[i] = total[i];
 		i++;
 	}
-	if (buff_total[i] == '\n')//if nl found we add it as well
-	{
-		arr[i] = buff_total[i];
-		i++;
-	}
-	arr[i] = '\0';//we finish the line
-	return (arr);
+	if (total[i] == '\n')
+		line[i++] = '\n';
+	return (line);/*return our line*/
 }
 
-char	*next_line(char *buff_total)//we delete the line that we found
+char	*next_line(char *total)/*delete prev line and get next*/
 {
-	int	i;
-	int	j;
-	char	*arr;
+	int		i;
+	int		j;
+	char	*line;
 
 	i = 0;
+	while (total[i] && total[i] != '\n')/*we find the len of the first line*/
+		i++;
+	if (!total[i])/*if its the end return 0*/
+	{
+		free(total);
+		return (0);
+	}
+	line = ft_calloc((ft_strlen(total) - i + 1), sizeof(char));/*len of the file minus the end of the line*/
+	i++;/*go to the next element*/
 	j = 0;
-	while (buff_total[i] && buff_total[i] != '\n')
-		i++;//find the len of the current line
-	if (!buff_total[i])
-	{
-		free(buff_total);
-		return (0);//if there is nothing after then NULL
-	}
-	//len of the file - len of the line
-	arr = malloc(sizeof(char) * (strlen(buff_total) - i + 1));
-	if (!arr)
-		return (0);
-	i++;//got to next line
-	while (buff_total[i])
-		arr[i++] = buff_total[j++];//fill up
-	arr[i] = '\0';
-	free(buff_total);
-	return (arr);
+	while (total[i])/*fill up*/
+		line[j++] = total[i++];
+	free(total);
+	return (line);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*buff_total;
-	char	*line;
+	static char	*total;
+	char		*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
-			return (0);
-	buff_total = read_file(fd, buff_total);
-	if (!buff_total)
 		return (0);
-	line = take_line(buff_total);
-	buff_total = next_line(buff_total);
+	total = read_file(fd, total);/*read whole*/
+	if (!total)
+		return (0);
+	line = get_line(total);/*get one line*/
+	total = next_line(total);/*get next line, del prev*/
 	return (line);
 }
 
-int	main(void)
+/*int	main(void)
 {
-	char *line;
-	int i;
-	int fd;
-	int fd1;
-	int fd2;
-	int fd3;
-	
-	i = 1;
-	fd = open("bla.txt", O_RDONLY);
-	fd1 = open("bla1.txt", O_RDONLY);
-	fd2 = open("bla2.txt", O_RDONLY);
-	fd3 = open("bla3.txt", O_RDONLY);
-	while (i < 7)
+	char	*line;
+	int		fd;
+	int		fd2;
+	int		fd3;
+	int		i;
+    
+	fd = open("bla1.txt", O_RDONLY);
+	//bonus
+	//fd2 = open("test2.txt", O_RDONLY);
+	//fd3 = open("test3.txt", O_RDONLY);
+    
+	i = 0;
+	while (i < 4)
 	{
 		line = get_next_line(fd);
-		printf("%d line is: %s", i, line);
+		printf("line %d: %s", i, line);
 		free(line);
-		line = get_next_line(fd1);
-		printf("%d line is: %s", i, line);
-		free(line);
-		line = get_next_line(fd2);
-		printf("%d line is: %s", i, line);
-		free(line);
-		line = get_next_line(fd3);
-		printf("%d line is: %s", i, line);
-		free(line);
+		//bonuses
+		//line = get_next_line(fd2);
+		//printf("line %d: %s", i, line);
+		//free(line);
+		//line = get_next_line(fd3);
+		//printf("line %d: %s", i, line);
+		//free(line);
+		//i++;
 	}
 	close(fd);
-	close(fd1);
 	close(fd2);
 	close(fd3);
 	return (0);
-}
+}*/

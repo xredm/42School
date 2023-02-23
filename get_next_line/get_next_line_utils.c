@@ -6,60 +6,84 @@
 /*   By: mredkole <mredkole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/18 14:02:49 by mredkole          #+#    #+#             */
-/*   Updated: 2023/02/21 21:08:21 by mredkole         ###   ########.fr       */
+/*   Updated: 2023/02/23 12:48:18 by mredkole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-size_t	strlen(const char *arr)
+size_t	ft_strlen(const char *arr)
 {
 	int	i;
 
 	i = 0;
 	while (arr[i])
-	{
 		i++;
-	}
 	return (i);
 }
 
-char	*strchr(const char *buff_total, int c)
+void	*ft_calloc(size_t count, size_t size)
 {
-	while ((char)c != *buff_total)
-	{
-		if (!*buff_total)
-			return (0);
-		buff_total++;
-	}
-	return ((char *)buff_total);
-}
-
-char	*strjoin(char *buff_total, char *buffer)
-{
-	size_t	i;
-	size_t	j;
 	char	*arr;
 
-	if(!buff_total)
-	{
-		buff_total = malloc(sizeof(char) * 1);
-		buff_total[0] = '\0';
-	}
-	if (!buffer)
-		return (0);
-	arr = malloc(sizeof(char) * ((strlen(buff_total) + strlen(buffer))));
+	arr = malloc(count * size);
 	if (!arr)
 		return (0);
-	i = 0;
-	j = 0;
-	while (buff_total[i])
-		arr[i++] = buff_total[j++];
-	j = 0;
-	while (buffer[j])
-		arr[i++] = buffer[j++];
-	arr[strlen(buff_total) + strlen(buffer)] = '\0';
-	free(buff_total);
+	ft_bzero(arr, count * size);
 	return (arr);
 }
 
+void	ft_bzero(void *arr, size_t size)
+{
+	char	*str;
+	size_t	i;
+
+	str = (char *)arr;
+	i = 0;
+	while (i < size)
+	{
+		str[i] = '\0';
+		i++;
+	}
+}
+
+char	*ft_strjoin(char const *result, char const *buffer)
+{
+	char	*new_res;
+	int		i;
+	int		j;
+
+	i = 0;
+	j = 0;
+	if (!result || !buffer)
+		return (0);
+	new_res = malloc(sizeof(char) * (ft_strlen(result) + ft_strlen(buffer) + 1));
+	if (!new_res)
+		return (0);
+	while (result[i] != '\0')/*fill with first part*/
+	{
+		new_res[i] = result[i];
+		i++;
+	}
+	while (buffer[j] != '\0')/*then second*/
+	{
+		new_res[i] = buffer[j];
+		i++;
+		j++;
+	}
+	new_res[ft_strlen(result) + ft_strlen(buffer)] = '\0';/*we want no leaks*/
+	return (new_res);
+}
+
+char	*ft_strchr(const char *arr, int c)
+{
+	char	*str;
+
+	str = (char *)arr;
+	while (*str != c && *str != '\0')
+		str++;
+	if (*str == c)
+		return (str);
+	else
+		return (0);
+}
