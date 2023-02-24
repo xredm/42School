@@ -6,7 +6,7 @@
 /*   By: mredkole <mredkole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/18 14:02:58 by mredkole          #+#    #+#             */
-/*   Updated: 2023/02/23 14:09:47 by mredkole         ###   ########.fr       */
+/*   Updated: 2023/02/23 14:58:09 by mredkole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ char	*read_file(int fd, char *result)
 	if (!result)
 		result = ft_calloc(1, 1);
 	buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
+	if (!buffer)
+		return (0);
 	bytes = 1;
 	while (bytes > 0 && !ft_strchr(buffer, '\n'))
 	{
@@ -95,10 +97,10 @@ char	*next_line(char *total)
 
 char	*get_next_line(int fd)
 {
-	static char	*total[OPEN_MAX];
+	static char	*total[65534];
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
 		return (0);
 	total[fd] = read_file(fd, total[fd]);
 	if (!total[fd])
@@ -107,8 +109,7 @@ char	*get_next_line(int fd)
 	total[fd] = next_line(total[fd]);
 	return (line);
 }
-
-int	main(void)
+/*int	main(void)
 {
 	char	*line;
 	int		fd;
@@ -138,4 +139,4 @@ int	main(void)
 	close(fd2);
 	close(fd3);
 	return (0);
-}
+}*/

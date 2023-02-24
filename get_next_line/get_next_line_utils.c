@@ -6,7 +6,7 @@
 /*   By: mredkole <mredkole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/18 14:02:49 by mredkole          #+#    #+#             */
-/*   Updated: 2023/02/23 12:48:18 by mredkole         ###   ########.fr       */
+/*   Updated: 2023/02/23 13:59:23 by mredkole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,21 +57,22 @@ char	*ft_strjoin(char const *result, char const *buffer)
 	j = 0;
 	if (!result || !buffer)
 		return (0);
-	new_res = malloc(sizeof(char) * (ft_strlen(result) + ft_strlen(buffer) + 1));
+	new_res = malloc(sizeof(char) * (ft_strlen(result)
+				+ ft_strlen(buffer) + 1));
 	if (!new_res)
 		return (0);
-	while (result[i] != '\0')/*fill with first part*/
+	while (result[i] != '\0')
 	{
 		new_res[i] = result[i];
 		i++;
 	}
-	while (buffer[j] != '\0')/*then second*/
+	while (buffer[j] != '\0')
 	{
 		new_res[i] = buffer[j];
 		i++;
 		j++;
 	}
-	new_res[ft_strlen(result) + ft_strlen(buffer)] = '\0';/*we want no leaks*/
+	new_res[ft_strlen(result) + ft_strlen(buffer)] = '\0';
 	return (new_res);
 }
 

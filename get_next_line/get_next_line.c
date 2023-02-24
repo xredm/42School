@@ -6,13 +6,14 @@
 /*   By: mredkole <mredkole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/18 14:02:58 by mredkole          #+#    #+#             */
-/*   Updated: 2023/02/23 12:51:39 by mredkole         ###   ########.fr       */
+/*   Updated: 2023/02/23 14:57:17 by mredkole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*ft_free(char *result, char *buffer)/*here we join both and free the result*/
+/*here we join both and free the result*/
+char	*ft_free(char *result, char *buffer)
 {
 	char	*arr;
 
@@ -26,26 +27,29 @@ char	*read_file(int fd, char *result)
 	char	*buffer;
 	int		bytes;
 
-	if (!result)/*malloc since result is empty*/
+	if (!result)
 		result = ft_calloc(1, 1);
-	buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));/*malloc according to our buffer size*/
+	buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
+	if (!buffer)
+		return (0);
 	bytes = 1;
-	while (bytes > 0 && !ft_strchr(buffer, '\n'))/*stop when nl reached*/	
+	while (bytes > 0 && !ft_strchr(buffer, '\n'))
 	{
-		bytes = read(fd, buffer, BUFFER_SIZE);/*while loop until the eof is reached*/
-		if (bytes == -1)/*error happened or interrupt 0 is when whole file is read*/
+		bytes = read(fd, buffer, BUFFER_SIZE);
+		if (bytes == -1)
 		{
 			free(buffer);
 			return (0);
 		}
-		buffer[bytes] = '\0';/*end it to protect from leaks*/
-		result = ft_free(result, buffer);/*join result & buffer then free*/
+		buffer[bytes] = '\0';
+		result = ft_free(result, buffer);
 	}
 	free(buffer);
 	return (result);
 }
 
-char	*get_line(char *total)/*takes one line for a return*/
+/*takes one line for a return*/
+char	*get_line(char *total)
 {
 	char	*line;
 	int		i;
@@ -53,38 +57,39 @@ char	*get_line(char *total)/*takes one line for a return*/
 	i = 0;
 	if (!total[i])
 		return (0);
-	while (total[i] && total[i] != '\n')/*find the end of the line*/
+	while (total[i] && total[i] != '\n')
 		i++;
-	line = ft_calloc(i + 2, sizeof(char));/*malloc the size of the line*/
+	line = ft_calloc(i + 2, sizeof(char));
 	i = 0;
-	while (total[i] && total[i] != '\n')/*fill up the line*/
+	while (total[i] && total[i] != '\n')
 	{
 		line[i] = total[i];
 		i++;
 	}
 	if (total[i] == '\n')
 		line[i++] = '\n';
-	return (line);/*return our line*/
+	return (line);
 }
 
-char	*next_line(char *total)/*delete prev line and get next*/
+/*delete prev line and get next*/
+char	*next_line(char *total)
 {
 	int		i;
 	int		j;
 	char	*line;
 
 	i = 0;
-	while (total[i] && total[i] != '\n')/*we find the len of the first line*/
+	while (total[i] && total[i] != '\n')
 		i++;
-	if (!total[i])/*if its the end return 0*/
+	if (!total[i])
 	{
 		free(total);
 		return (0);
 	}
-	line = ft_calloc((ft_strlen(total) - i + 1), sizeof(char));/*len of the file minus the end of the line*/
-	i++;/*go to the next element*/
+	line = ft_calloc((ft_strlen(total) - i + 1), sizeof(char));
+	i++;
 	j = 0;
-	while (total[i])/*fill up*/
+	while (total[i])
 		line[j++] = total[i++];
 	free(total);
 	return (line);
@@ -95,16 +100,15 @@ char	*get_next_line(int fd)
 	static char	*total;
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
 		return (0);
-	total = read_file(fd, total);/*read whole*/
+	total = read_file(fd, total);
 	if (!total)
 		return (0);
-	line = get_line(total);/*get one line*/
-	total = next_line(total);/*get next line, del prev*/
+	line = get_line(total);
+	total = next_line(total);
 	return (line);
 }
-
 /*int	main(void)
 {
 	char	*line;
@@ -119,7 +123,7 @@ char	*get_next_line(int fd)
 	//fd3 = open("test3.txt", O_RDONLY);
     
 	i = 0;
-	while (i < 4)
+	while (i < 10)
 	{
 		line = get_next_line(fd);
 		printf("line %d: %s", i, line);
@@ -131,7 +135,7 @@ char	*get_next_line(int fd)
 		//line = get_next_line(fd3);
 		//printf("line %d: %s", i, line);
 		//free(line);
-		//i++;
+		i++;
 	}
 	close(fd);
 	close(fd2);

@@ -6,7 +6,7 @@
 /*   By: mredkole <mredkole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/18 14:03:02 by mredkole          #+#    #+#             */
-/*   Updated: 2023/02/23 14:13:11 by mredkole         ###   ########.fr       */
+/*   Updated: 2023/02/23 14:29:35 by mredkole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 1000
-#  define OPEN_MAX 65534
 # endif
 
 # include <fcntl.h>
